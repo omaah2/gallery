@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { AuthProvider, AuthContext } from "./Components/AuthProvider";
 import ImageGallery from "./Components/ImageGallery";
 import Login from "./Components/Login";
-import Navbar from "./Components/Navbar"; // Import the Navbar component
+import Navbar from "./Components/Navbar";
 import ErrorPage from "./Components/ErrorPage";
 
 function App() {
@@ -11,29 +11,29 @@ function App() {
   const user = useContext(AuthContext);
 
   return (
-    <React.StrictMode>
       <Router>
         <AuthProvider>
-          <Navbar /> {/* Include the Navbar component */}
-          <div className="container mx-auto p-4 flex flex-col items-center justify-center h-screen">
-            <Routes>
-              <Route
-                path="/"
-                element={
-                  user ? <ImageGallery setError={setError} /> : <Login />
-                }
-              />
-              <Route
-                path="/ImageGallery"
-                element={<ImageGallery setError={setError} />}
-              />
-            </Routes>
-
+          <div>
+            <div className="mt-16">
+              <Navbar /> {/* Add top margin to create space below Navbar */}
+              <Routes>
+                <Route
+                  path="/"
+                  element={
+                    user ? <ImageGallery setError={setError} /> : <Login />
+                  }
+                />
+                <Route
+                  path="/ImageGallery"
+                  element={<ImageGallery setError={setError} />}
+                />
+              </Routes>
+            </div>
             {error && <ErrorPage error={error} />}
           </div>
         </AuthProvider>
       </Router>
-    </React.StrictMode>
+
   );
 }
 

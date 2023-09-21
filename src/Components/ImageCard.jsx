@@ -1,3 +1,4 @@
+
 import React from "react";
 
 function ImageCard({ image }) {
@@ -7,7 +8,7 @@ function ImageCard({ image }) {
         <img
           src={image.url}
           alt={image.title}
-          className="w-full h-full object-cover"
+          className="w-full h-full object-cover transition-opacity hover:opacity-80"
         />
       </div>
       <div className="px-6 py-4 bg-white">

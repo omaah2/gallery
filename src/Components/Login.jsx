@@ -1,11 +1,11 @@
-/* eslint-disable no-unused-vars */
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "./AuthProvider";
 import {
   getAuth,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
+  onAuthStateChanged,
 } from "firebase/auth";
 import { auth } from "../Firebase/firebase";
 
@@ -18,23 +18,40 @@ const Login = () => {
   const navigate = useNavigate();
   const { setUser } = useContext(AuthContext);
 
-  const auth = getAuth(); // Create an auth instance
+  const authInstance = getAuth(); // Create an auth instance
+  let unsubscribe; // Declare an unsubscribe function
+
+  useEffect(() => {
+    // Listen for changes in user authentication state
+    unsubscribe = onAuthStateChanged(authInstance, (authUser) => {
+      setUser(authUser);
+    });
+
+    // Clean up the listener when the component unmounts
+    return () => {
+      if (unsubscribe) {
+        unsubscribe();
+      }
+    };
+  }, [authInstance, setUser]);
 
   const handleLoginOrSignUp = async (e) => {
     e.preventDefault();
 
     try {
       if (isLogin) {
+        // Login
         const userDetails = await signInWithEmailAndPassword(
-          auth,
+          authInstance,
           email,
           password
         );
         const user = userDetails.user;
         setUser(user);
       } else {
+        // Sign up
         const userDetails = await createUserWithEmailAndPassword(
-          auth,
+          authInstance,
           email,
           password
         );
@@ -42,11 +59,12 @@ const Login = () => {
         setUser(user);
       }
 
+      // Redirect to the image gallery page after successful login or signup
       navigate("/ImageGallery");
     } catch (error) {
-      console.error("Firebase Authentication Error:", error);
-      setError("Invalid email or password");
-    }
+  console.error("Firebase Authentication Error:", error.code, error.message);
+  setError("Authentication failed: " + error.message);
+ }
   };
 
   return (
