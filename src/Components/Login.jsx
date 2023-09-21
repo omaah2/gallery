@@ -1,44 +1,93 @@
 /* eslint-disable no-unused-vars */
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
+import { useNavigate } from "react-router-dom";
 import { AuthContext } from "./AuthProvider";
+import {
+  getAuth,
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+} from "firebase/auth";
 import { auth } from "../Firebase/firebase";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isLogin, setIsLogin] = useState(true);
   const [error, setError] = useState(null);
 
-  const handleLogin = async (e) => {
+  const navigate = useNavigate();
+  const { setUser } = useContext(AuthContext);
+
+  const auth = getAuth(); // Create an auth instance
+
+  const handleLoginOrSignUp = async (e) => {
     e.preventDefault();
 
     try {
-      await auth.signInWithEmailAndPassword(email, password);
+      if (isLogin) {
+        const userDetails = await signInWithEmailAndPassword(
+          auth,
+          email,
+          password
+        );
+        const user = userDetails.user;
+        setUser(user);
+      } else {
+        const userDetails = await createUserWithEmailAndPassword(
+          auth,
+          email,
+          password
+        );
+        const user = userDetails.user;
+        setUser(user);
+      }
+
+      navigate("/ImageGallery");
     } catch (error) {
-      setError(error.message);
+      console.error("Firebase Authentication Error:", error);
+      setError("Invalid email or password");
     }
   };
 
   return (
-    <div>
-      <h2>Login</h2>
-      <form onSubmit={handleLogin}>
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-        <button type="submit">Login</button>
-      </form>
-      {error && <p className="text-red-500">{error}</p>}
+    <div className="flex items-center justify-center h-screen">
+      <div className="bg-white p-8 rounded-lg shadow-md max-w-md mx-auto transform transition-transform hover:scale-105">
+        <h2 className="text-2xl mb-4">{isLogin ? "Login" : "Sign Up"}</h2>
+        <form onSubmit={handleLoginOrSignUp}>
+          <input
+            className="border rounded-md py-2 px-3 mb-4 w-full focus:outline-none focus:ring-2 focus:ring-purple-500"
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+          <input
+            className="border rounded-md py-2 px-3 mb-4 w-full focus:outline-none focus:ring-2 focus:ring-purple-500"
+            type="password"
+            placeholder="Password (e.g., Password123)"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+          <button
+            className={`bg-purple-500 text-white py-2 px-4 rounded-md hover:bg-purple-600 focus:outline-none focus:ring-2 focus:ring-purple-500 transform transition-transform hover:scale-105`}
+            type="submit"
+          >
+            {isLogin ? "Login" : "Sign Up"}
+          </button>
+        </form>
+        {error && <p className="text-red-500 mt-2">{error}</p>}
+        <p className="mt-4">
+          {isLogin ? "Don't have an account?" : "Already have an account?"}{" "}
+          <span
+            className="text-purple-500 cursor-pointer"
+            onClick={() => setIsLogin(!isLogin)}
+          >
+            {isLogin ? "Sign up" : "Log in"} here
+          </span>
+        </p>
+      </div>
     </div>
   );
 };

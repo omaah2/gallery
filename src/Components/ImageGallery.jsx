@@ -1,18 +1,19 @@
 /* eslint-disable no-unused-vars */
-import React, { useState, useEffect } from "react";
-import { auth } from "../Firebase/firebase"; // Initialize Firebase
-import ImageCard from "./ImageCard"; // Create ImageCard component
-import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd"; // Import DnD components
-import imageJsonData from "../Data/Image.json"; // Import the JSON data
+import React, { useState, useContext, useEffect } from "react";
+import { auth } from "../Firebase/firebase";
+import ImageCard from "./ImageCard";
+import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
+import imageJsonData from "../Data/Image.json";
+import Search from "./Search";
 
 function ImageGallery() {
   const [user, setUser] = useState(null);
   const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(true);
-  // Other state variables for DnD, search, etc.
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filteredImages, setFilteredImages] = useState([]);
 
   useEffect(() => {
-    // Check user authentication status
     const unsubscribe = auth.onAuthStateChanged((authUser) => {
       if (authUser) {
         setUser(authUser);
@@ -21,65 +22,73 @@ function ImageGallery() {
       }
     });
 
-    // Load images from JSON data
-    setImages(imageJsonData);
+    const updatedImages = imageJsonData.map((image) => ({
+      ...image,
+      title: image.tags[0],
+    }));
+
+    setImages(updatedImages);
+    setFilteredImages(updatedImages);
     setLoading(false);
 
     return () => {
-      // Cleanup (unsubscribe from auth changes, etc.)
+      // Cleanup
     };
   }, []);
 
-  // Implement DnD functionality
+  useEffect(() => {
+    const filtered = images.filter((image) => {
+      return image.title.toLowerCase().includes(searchTerm.toLowerCase());
+    });
+
+    setFilteredImages(filtered);
+  }, [images, searchTerm]);
+
   const handleDragEnd = (result) => {
-    if (!result.destination) return; // Dragged outside the list
-    const items = [...images];
+    if (!result.destination) return;
+    const items = [...filteredImages];
     const [reorderedItem] = items.splice(result.source.index, 1);
     items.splice(result.destination.index, 0, reorderedItem);
-    setImages(items);
+    setFilteredImages(items);
   };
 
-  // Implement search functionality and other logic here
+return (
+  <div className="container mx-auto mt-96">
+    <Search handleSearch={setSearchTerm} />
 
-  return (
-    <div className="container mx-auto mt-4">
-      {loading ? (
-        // Show loading spinner or skeleton loader here
-        <div>Loading...</div>
-      ) : (
-        <DragDropContext onDragEnd={handleDragEnd}>
-          <Droppable droppableId="image-gallery" direction="horizontal">
-            {(provided) => (
-              <div
-                ref={provided.innerRef}
-                {...provided.droppableProps}
-                className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"
-              >
-                {images.map((image, index) => (
-                  <Draggable
-                    key={image.id}
-                    draggableId={image.id}
-                    index={index}
-                  >
-                    {(provided) => (
-                      <div
-                        ref={provided.innerRef}
-                        {...provided.draggableProps}
-                        {...provided.dragHandleProps}
-                      >
-                        <ImageCard image={image} />
-                      </div>
-                    )}
-                  </Draggable>
-                ))}
-                {provided.placeholder}
-              </div>
-            )}
-          </Droppable>
-        </DragDropContext>
-      )}
-    </div>
-  );
+    {loading ? (
+      <div>Loading...</div>
+    ) : (
+      <DragDropContext onDragEnd={handleDragEnd}>
+        <Droppable droppableId="image-gallery" direction="horizontal">
+          {(provided) => (
+            <div
+              ref={provided.innerRef}
+              {...provided.droppableProps}
+              className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"
+            >
+              {filteredImages.map((image, index) => (
+                <Draggable key={image.id} draggableId={image.id} index={index}>
+                  {(provided) => (
+                    <div
+                      ref={provided.innerRef}
+                      {...provided.draggableProps}
+                      {...provided.dragHandleProps}
+                    >
+                      <ImageCard image={image} />
+                    </div>
+                  )}
+                </Draggable>
+              ))}
+              {provided.placeholder}
+            </div>
+          )}
+        </Droppable>
+      </DragDropContext>
+    )}
+  </div>
+);
+
 }
 
 export default ImageGallery;

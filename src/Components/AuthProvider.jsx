@@ -1,5 +1,6 @@
-/* eslint-disable no-unused-vars */
-import React, { createContext, useState, useEffect, useContext } from "react";
+
+import React, { createContext, useState, useEffect } from "react";
+import { getAuth, onAuthStateChanged } from "firebase/auth"; // Import Firebase Authentication modules
 
 export const AuthContext = createContext();
 
@@ -7,13 +8,18 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Simulate authentication logic
   useEffect(() => {
-    // Simulate authentication check
-    setTimeout(() => {
-      setUser(/* Your authentication logic here */);
-      setLoading(false);
-    }, 2000); // Simulated 2-second delay
+    // Initialize Firebase app and get Firebase Authentication instance
+    const auth = getAuth();
+
+    // Listen for changes in user authentication state
+    const unsubscribe = onAuthStateChanged(auth, (authUser) => {
+      setUser(authUser); // Set the user to the authenticated user or null
+      setLoading(false); // Set loading to false once authentication state is determined
+    });
+
+    // Clean up the listener when the component unmounts
+    return () => unsubscribe();
   }, []);
 
   return (
@@ -22,3 +28,4 @@ export const AuthProvider = ({ children }) => {
     </AuthContext.Provider>
   );
 };
+

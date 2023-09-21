@@ -4,7 +4,6 @@ import { getStorage } from "firebase/storage";
 import { getFirestore } from "firebase/firestore";
 
 
-
 const firebaseConfig = {
   apiKey: "AIzaSyDcklitY6CNlTf82OsTd52sNvJPBtXS-tY",
   authDomain: "image-gallery-ed237.firebaseapp.com",
@@ -14,7 +13,6 @@ const firebaseConfig = {
   appId: "1:1062340147252:web:6534e64d0d981760fb3261",
   measurementId: "G-M0LPN6PMM1",
 };
-
 
 
 const app = initializeApp(firebaseConfig);
