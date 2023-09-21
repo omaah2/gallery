@@ -18,18 +18,20 @@ Node.js: Make sure you have Node.js installed on your computer. You can download
 
 Installation
 Clone the repository:
+### `git clone https://github.com/Omaah2/gallery.git`
 
 
-### `git clone https://github.com/your-username/react-drag-drop-gallery.git`
 Change to the project directory:
+### `cd react-gallery`
 
 
-### `cd react-drag-drop-gallery`
 Install dependencies:
-
-
 ### `npm install`
+
+
+
 Running the Application
+
 Now that you have installed the dependencies, you can run the application:
 
 
