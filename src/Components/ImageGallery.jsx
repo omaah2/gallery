@@ -1,6 +1,9 @@
+
 /* eslint-disable no-unused-vars */
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
+
 import ImageCard from "./ImageCard";
+import LoadingPage from "./LoadingPage";
 
 const images = [
   {
@@ -65,79 +68,101 @@ const images = [
   },
 ];
 
-function ImageGallery() {
-  const [draggedImage, setDraggedImage] = useState(null);
-  const [galleryImages, setGalleryImages] = useState(images);
+function ImageGallery ()
+{
+  const [ isLoading, setIsLoading ] = useState( true );
+  
+  useEffect(() => {
+    setIsLoading(false);
+  }, []);
+   
 
-  const handleDragStart = (image) => {
-    setDraggedImage(image);
+  const [ draggedImage, setDraggedImage ] = useState( null );
+  const [ galleryImages, setGalleryImages ] = useState( images );
+
+  const handleDragStart = ( image ) =>
+  {
+    setDraggedImage( image );
   };
 
-  const handleDragOver = (e) => {
+  const handleDragOver = ( e ) =>
+  {
     e.preventDefault();
   };
 
-  const handleDrop = (e, dropIndex) => {
+  const handleDrop = ( e, dropIndex ) =>
+  {
     e.preventDefault();
-    if (!draggedImage) return;
+    if ( !draggedImage ) return;
 
     const draggedImageIndex = galleryImages.findIndex(
-      (image) => image.id === draggedImage.id
+      ( image ) => image.id === draggedImage.id
     );
 
-    if (draggedImageIndex !== -1) {
-      const newGalleryImages = [...galleryImages];
+    if ( draggedImageIndex !== -1 )
+    {
+      const newGalleryImages = [ ...galleryImages ];
 
-      newGalleryImages.splice(draggedImageIndex, 1);
+      newGalleryImages.splice( draggedImageIndex, 1 );
 
-      newGalleryImages.splice(dropIndex, 0, draggedImage);
+      newGalleryImages.splice( dropIndex, 0, draggedImage );
 
-      setGalleryImages(newGalleryImages);
+      setGalleryImages( newGalleryImages );
     }
 
-    setDraggedImage(null);
+    setDraggedImage( null );
+    
   };
+  
 
   return (
     <div className="mt-56 px-4 sm:px-8 md:px-12 lg:px-16">
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {galleryImages.map((image, index) => (
-          <div
-            key={image.id}
-            draggable
-            onDragStart={() => handleDragStart(image)}
-            onDrop={(e) => handleDrop(e, index)}
-            onDragOver={(e) => e.preventDefault()}
-          >
-            <ImageCard image={image} />
-          </div>
-        ))}
-        {draggedImage && (
-          <div className="max-w-sm rounded overflow-hidden shadow-lg">
-            <div className="h-48 overflow-hidden">
-              <img
-                src={draggedImage.url}
-                alt={draggedImage.title}
-                className="w-full h-full object-cover"
-              />
-            </div>
-            <div className="px-6 py-4 bg-white">
-              <div className="font-bold text-xl mb-2">{draggedImage.title}</div>
-              <div className="flex flex-wrap gap-2">
-                {draggedImage.tags.map((tag) => (
-                  <span
-                    key={tag}
-                    className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700"
-                  >
-                    {tag}
-                  </span>
-                ))}
+      {isLoading ? (
+        <LoadingPage />
+      ) : (
+        <>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {galleryImages.map( ( image, index ) => (
+              <div
+                key={image.id}
+                draggable
+                onDragStart={() => handleDragStart( image )}
+                onDrop={( e ) => handleDrop( e, index )}
+                onDragOver={( e ) => e.preventDefault()}
+              >
+                <ImageCard image={image} />
               </div>
-            </div>
+            ) )}
+            {draggedImage && (
+              <div className="max-w-sm rounded overflow-hidden shadow-lg">
+                <div className="h-48 overflow-hidden">
+                  <img
+                    src={draggedImage.url}
+                    alt={draggedImage.title}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div className="px-6 py-4 bg-white">
+                  <div className="font-bold text-xl mb-2">{draggedImage.title}</div>
+                  <div className="flex flex-wrap gap-2">
+                    {draggedImage.tags.map( ( tag ) => (
+                      <span
+                        key={tag}
+                        className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700"
+                      >
+                        {tag}
+                      </span>
+                    ) )}
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
-        )}
-      </div>
+        </>
+      )}
     </div>
+    
+  
   );
 }
 

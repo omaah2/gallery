@@ -1,4 +1,5 @@
-import React, { useState, useContext } from "react";
+/* eslint-disable no-undef */
+import React, { useState, useContext, useEffect } from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { AuthProvider, AuthContext } from "./Components/AuthProvider";
 import ImageGallery from "./Components/ImageGallery";
@@ -10,12 +11,25 @@ function App() {
   const [error, setError] = useState(null);
   const user = useContext(AuthContext);
 
+  useEffect(() => {
+    // Simulate an asynchronous check of user authentication
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 2000); // Simulated 2-second loading time
+  }, []);
+
+  const [isLoading, setIsLoading] = useState(true);
+
   return (
-      <Router>
-        <AuthProvider>
-          <div>
-            <div className="mt-16">
-              <Navbar /> {/* Add top margin to create space below Navbar */}
+    <Router>
+      <AuthProvider>
+        <div>
+          <div className="mt-16">
+            <Navbar />
+            {isLoading ? (
+              <div className="flex items-center justify-center h-screen">
+              </div>
+            ) : (
               <Routes>
                 <Route
                   path="/"
@@ -28,12 +42,12 @@ function App() {
                   element={<ImageGallery setError={setError} />}
                 />
               </Routes>
-            </div>
-            {error && <ErrorPage error={error} />}
+            )}
           </div>
-        </AuthProvider>
-      </Router>
-
+          {error && <ErrorPage error={error} />}
+        </div>
+      </AuthProvider>
+    </Router>
   );
 }
 
