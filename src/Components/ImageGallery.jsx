@@ -67,7 +67,7 @@ const images = [
   {
     id: "image11",
     url: "https://images.pexels.com/photos/2418664/pexels-photo-2418664.jpeg?auto=compress&cs=tinysrgb&w=600",
-    title: "Thunderl",
+    title: "Thunder",
     tags: ["Sky", "Weather"],
   },
   {
