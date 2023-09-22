@@ -18,7 +18,7 @@ const Login = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [successMessage, setSuccessMessage] = useState(""); // New state for success message
+  const [successMessage, setSuccessMessage] = useState("");
 
   const navigate = useNavigate();
   const { setUser } = useContext(AuthContext);
@@ -38,14 +38,25 @@ const Login = () => {
     };
   }, [authInstance, setUser]);
 
+  const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  const isPasswordValid = /^(?=.*\d)(?=.*[A-Z])(?=.*[a-z]).{8,}$/.test(
+    password
+  );
+
   const handleLoginOrSignUp = async (e) => {
     e.preventDefault();
 
+    if (!isEmailValid || !isPasswordValid) {
+      setError(
+        "Email must be in the format user@example.com and password must contain at least 8 characters with at least one digit, one uppercase letter, and one lowercase letter."
+      );
+      return;
+    }
+
     try {
-      setIsLoading(true); // Start loading
+      setIsLoading(true);
 
       if (isLogin) {
-        // Login
         const userDetails = await signInWithEmailAndPassword(
           authInstance,
           email,
@@ -54,7 +65,6 @@ const Login = () => {
         const user = userDetails.user;
         setUser(user);
       } else {
-        // Sign up
         const userDetails = await createUserWithEmailAndPassword(
           authInstance,
           email,
@@ -64,12 +74,9 @@ const Login = () => {
         setUser(user);
       }
 
-      setIsLoading(false); // Stop loading
-
-      // Display success message
+      setIsLoading(false);
       setSuccessMessage(isLogin ? "Login successful!" : "Sign up successful!");
 
-      // Redirect to the image gallery page after successful login or signup
       navigate("/imageGallery");
     } catch (error) {
       console.error(
@@ -78,7 +85,7 @@ const Login = () => {
         error.message
       );
       setError("Authentication failed: " + error.message);
-      setIsLoading(false); // Stop loading on error
+      setIsLoading(false);
     }
   };
 
@@ -91,7 +98,6 @@ const Login = () => {
       ) : (
         <div className="bg-white p-8 rounded-lg shadow-md max-w-md mx-auto transform transition-transform hover:scale-105">
           <h2 className="text-2xl mb-4">{isLogin ? "Login" : "Sign Up"}</h2>
-          {/* Display success message with Tailwind CSS styling */}
           {successMessage && (
             <div className="bg-green-500 text-white py-2 px-4 rounded-md mb-4">
               {successMessage}
@@ -109,7 +115,7 @@ const Login = () => {
             <input
               className="border rounded-md py-2 px-3 mb-4 w-full focus:outline-none focus:ring-2 focus:ring-purple-500"
               type="password"
-              placeholder="Password (e.g., Password123)"
+              placeholder="Password (e.g. 1Password)"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
