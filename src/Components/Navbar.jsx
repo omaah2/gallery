@@ -1,20 +1,13 @@
-import React, { useState } from "react";
+import React from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { FaUser, FaSearch } from "react-icons/fa";
 
 function Navbar() {
   const navigate = useNavigate();
-  const [searchTerm, setSearchTerm] = useState("");
 
-  const handleSearchInputChange = (e) => {
-    setSearchTerm(e.target.value);
-  };
-
-  const handleSearchSubmit = (e) => {
-    e.preventDefault();
-    if (searchTerm.trim() !== "") {
-      navigate(`/search?term=${encodeURIComponent(searchTerm)}`);
-    }
+  const handleLogout = () => {
+    // Perform any logout actions here (e.g., clearing user session)
+    // Then navigate to the login page
+    navigate("/");
   };
 
   return (
@@ -31,37 +24,13 @@ function Navbar() {
             Gallery
           </Link>
         </div>
-        <form
-          onSubmit={handleSearchSubmit}
-          className="flex items-center mb-4 md:mb-0"
-        >
-          <input
-            type="text"
-            placeholder="Search"
-            className="bg-gray-200 text-gray-800 px-4 py-2 rounded-l-md focus:outline-none h-10"
-            value={searchTerm}
-            onChange={handleSearchInputChange}
-          />
-          <button
-            type="submit"
-            className="bg-purple-700 hover:bg-purple-600 text-white px-4 py-2 rounded-r-md focus:outline-none h-10"
-          >
-            <FaSearch />
-          </button>
-        </form>
         <div className="flex items-center">
-          <Link
-            to="/"
-            className="text-gray-300 hover:text-white mr-4 transition duration-300"
-          >
-            <FaUser className="text-lg" /> Login
-          </Link>
-          <Link
-            to="/"
+          <button
+            onClick={handleLogout}
             className="bg-purple-700 hover:bg-purple-600 text-white px-4 py-2 rounded-md transition duration-300"
           >
-            <FaUser className="text-lg mr-2" /> Signup
-          </Link>
+            Logout
+          </button>
         </div>
       </div>
     </nav>

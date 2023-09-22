@@ -1,7 +1,5 @@
-
 /* eslint-disable no-unused-vars */
-import React, { useState,useEffect } from "react";
-
+import React, { useState, useEffect } from "react";
 import ImageCard from "./ImageCard";
 import LoadingPage from "./LoadingPage";
 
@@ -66,103 +64,162 @@ const images = [
     title: "Plant",
     tags: ["nature", "plant"],
   },
+  {
+    id: "image11",
+    url: "https://images.pexels.com/photos/2418664/pexels-photo-2418664.jpeg?auto=compress&cs=tinysrgb&w=600",
+    title: "Thunderl",
+    tags: ["Sky", "Weather"],
+  },
+  {
+    id: "image12",
+    url: "https://images.pexels.com/photos/709552/pexels-photo-709552.jpeg?auto=compress&cs=tinysrgb&w=600",
+    title: "River",
+    tags: ["Beauty", "water", "nature"],
+  },
+  {
+    id: "image13",
+    url: "https://images.pexels.com/photos/689784/pexels-photo-689784.jpeg?auto=compress&cs=tinysrgb&w=600",
+    title: "Birds",
+    tags: ["Land", "Bird", "nature"],
+  },
+  {
+    id: "image14",
+    url: "https://images.pexels.com/photos/1408221/pexels-photo-1408221.jpeg?auto=compress&cs=tinysrgb&w=600",
+    title: "Flower",
+    tags: ["nature", "beauty"],
+  },
+  {
+    id: "image15",
+    url: "https://images.pexels.com/photos/4374580/pexels-photo-4374580.jpeg?auto=compress&cs=tinysrgb&w=600",
+    title: "picnic",
+    tags: ["nature", "beauty"],
+  },
+  {
+    id: "image16",
+    url: "https://images.pexels.com/photos/2387873/pexels-photo-2387873.jpeg?auto=compress&cs=tinysrgb&w=600",
+    title: "water",
+    tags: ["nature", "water"],
+  },
 ];
 
-function ImageGallery ()
-{
-  const [ isLoading, setIsLoading ] = useState( true );
-  
+function ImageGallery() {
+  const [isLoading, setIsLoading] = useState(true);
+  const [draggedImage, setDraggedImage] = useState(null);
+  const [galleryImages, setGalleryImages] = useState(images);
+  const [filteredImages, setFilteredImages] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+
   useEffect(() => {
     setIsLoading(false);
   }, []);
-   
 
-  const [ draggedImage, setDraggedImage ] = useState( null );
-  const [ galleryImages, setGalleryImages ] = useState( images );
-
-  const handleDragStart = ( image ) =>
-  {
-    setDraggedImage( image );
+  const handleSearchInputChange = (e) => {
+    setSearchTerm(e.target.value);
   };
 
-  const handleDragOver = ( e ) =>
-  {
+  const handleSearch = () => {
+    const filtered = images.filter((image) =>
+      image.tags.some((tag) =>
+        tag.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+    );
+    setFilteredImages(filtered);
+  };
+
+  const handleDragStart = (image) => {
+    setDraggedImage(image);
+  };
+
+  const handleDragOver = (e) => {
     e.preventDefault();
   };
 
-  const handleDrop = ( e, dropIndex ) =>
-  {
+  const handleDrop = (e, dropIndex) => {
     e.preventDefault();
-    if ( !draggedImage ) return;
+    if (!draggedImage) return;
 
     const draggedImageIndex = galleryImages.findIndex(
-      ( image ) => image.id === draggedImage.id
+      (image) => image.id === draggedImage.id
     );
 
-    if ( draggedImageIndex !== -1 )
-    {
-      const newGalleryImages = [ ...galleryImages ];
-
-      newGalleryImages.splice( draggedImageIndex, 1 );
-
-      newGalleryImages.splice( dropIndex, 0, draggedImage );
-
-      setGalleryImages( newGalleryImages );
+    if (draggedImageIndex !== -1) {
+      const newGalleryImages = [...galleryImages];
+      newGalleryImages.splice(draggedImageIndex, 1);
+      newGalleryImages.splice(dropIndex, 0, draggedImage);
+      setGalleryImages(newGalleryImages);
     }
 
-    setDraggedImage( null );
-    
+    setDraggedImage(null);
   };
-  
 
   return (
     <div className="mt-56 px-4 sm:px-8 md:px-12 lg:px-16">
-      {isLoading ? (
-        <LoadingPage />
-      ) : (
-        <>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {galleryImages.map( ( image, index ) => (
+      <div className="flex items-center mb-4">
+        <input
+          type="text"
+          placeholder="Search by tags"
+          className="bg-gray-200 text-gray-800 px-4 py-2 rounded-l-md focus:outline-none h-10"
+          value={searchTerm}
+          onChange={handleSearchInputChange}
+        />
+        <button
+          type="button"
+          onClick={handleSearch}
+          className="bg-purple-700 hover:bg-purple-600 text-white px-4 py-2 rounded-r-md focus:outline-none h-10"
+        >
+          Search
+        </button>
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        {searchTerm
+          ? filteredImages.map((image, index) => (
               <div
                 key={image.id}
                 draggable
-                onDragStart={() => handleDragStart( image )}
-                onDrop={( e ) => handleDrop( e, index )}
-                onDragOver={( e ) => e.preventDefault()}
+                onDragStart={() => handleDragStart(image)}
+                onDrop={(e) => handleDrop(e, index)}
+                onDragOver={(e) => e.preventDefault()}
               >
                 <ImageCard image={image} />
               </div>
-            ) )}
-            {draggedImage && (
-              <div className="max-w-sm rounded overflow-hidden shadow-lg">
-                <div className="h-48 overflow-hidden">
-                  <img
-                    src={draggedImage.url}
-                    alt={draggedImage.title}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <div className="px-6 py-4 bg-white">
-                  <div className="font-bold text-xl mb-2">{draggedImage.title}</div>
-                  <div className="flex flex-wrap gap-2">
-                    {draggedImage.tags.map( ( tag ) => (
-                      <span
-                        key={tag}
-                        className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700"
-                      >
-                        {tag}
-                      </span>
-                    ) )}
-                  </div>
-                </div>
+            ))
+          : galleryImages.map((image, index) => (
+              <div
+                key={image.id}
+                draggable
+                onDragStart={() => handleDragStart(image)}
+                onDrop={(e) => handleDrop(e, index)}
+                onDragOver={(e) => e.preventDefault()}
+              >
+                <ImageCard image={image} />
               </div>
-            )}
+            ))}
+        {draggedImage && (
+          <div className="max-w-sm rounded overflow-hidden shadow-lg">
+            <div className="h-48 overflow-hidden">
+              <img
+                src={draggedImage.url}
+                alt={draggedImage.title}
+                className="w-full h-full object-cover"
+              />
+            </div>
+            <div className="px-6 py-4 bg-white">
+              <div className="font-bold text-xl mb-2">{draggedImage.title}</div>
+              <div className="flex flex-wrap gap-2">
+                {draggedImage.tags.map((tag) => (
+                  <span
+                    key={tag}
+                    className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700"
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            </div>
           </div>
-        </>
-      )}
+        )}
+      </div>
     </div>
-    
-  
   );
 }
 

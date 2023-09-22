@@ -18,6 +18,7 @@ const Login = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [successMessage, setSuccessMessage] = useState(""); // New state for success message
 
   const navigate = useNavigate();
   const { setUser } = useContext(AuthContext);
@@ -65,8 +66,11 @@ const Login = () => {
 
       setIsLoading(false); // Stop loading
 
+      // Display success message
+      setSuccessMessage(isLogin ? "Login successful!" : "Sign up successful!");
+
       // Redirect to the image gallery page after successful login or signup
-      navigate("/ImageGallery");
+      navigate("/imageGallery");
     } catch (error) {
       console.error(
         "Firebase Authentication Error:",
@@ -87,6 +91,12 @@ const Login = () => {
       ) : (
         <div className="bg-white p-8 rounded-lg shadow-md max-w-md mx-auto transform transition-transform hover:scale-105">
           <h2 className="text-2xl mb-4">{isLogin ? "Login" : "Sign Up"}</h2>
+          {/* Display success message with Tailwind CSS styling */}
+          {successMessage && (
+            <div className="bg-green-500 text-white py-2 px-4 rounded-md mb-4">
+              {successMessage}
+            </div>
+          )}
           <form onSubmit={handleLoginOrSignUp}>
             <input
               className="border rounded-md py-2 px-3 mb-4 w-full focus:outline-none focus:ring-2 focus:ring-purple-500"
