@@ -91,10 +91,6 @@ const Login = () => {
 
   return (
     <div className="flex items-center justify-center h-screen">
-      {isLoading ? (
-        <LoadingPage />
-      ) : error ? (
-        
         <div className="bg-white p-8 rounded-lg shadow-md max-w-md mx-auto transform transition-transform hover:scale-105">
           <h2 className="text-2xl mb-4">{isLogin ? "Login" : "Sign Up"}</h2>
           {successMessage && (
@@ -137,7 +133,7 @@ const Login = () => {
             </span>
           </p>
         </div>
-      ): null}
+
     </div>
   );
 };
