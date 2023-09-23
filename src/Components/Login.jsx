@@ -10,7 +10,7 @@ import {
 } from "firebase/auth";
 import { auth } from "../Firebase/firebase";
 import LoadingPage from "./LoadingPage";
-import ErrorPage from "./ErrorPage";
+
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -94,8 +94,7 @@ const Login = () => {
       {isLoading ? (
         <LoadingPage />
       ) : error ? (
-        <ErrorPage error={error} />
-      ) : (
+        
         <div className="bg-white p-8 rounded-lg shadow-md max-w-md mx-auto transform transition-transform hover:scale-105">
           <h2 className="text-2xl mb-4">{isLogin ? "Login" : "Sign Up"}</h2>
           {successMessage && (
@@ -138,7 +137,7 @@ const Login = () => {
             </span>
           </p>
         </div>
-      )}
+      ): null}
     </div>
   );
 };
